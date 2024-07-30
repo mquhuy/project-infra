@@ -22,10 +22,6 @@ export IMAGE_TYPE="${IMAGE_TYPE}"
 
 # shellcheck disable=SC1091
 source "${current_dir}/upload-ci-image.sh"
-# shellcheck disable=SC1091
-source "${current_dir}/upload-node-image.sh"
-# shellcheck disable=SC1091
-source "${current_dir}/verify-node-image.sh"
 
 # Disable needrestart interactive mode
 sudo sed -i "s/^#\$nrconf{restart} = 'i';/\$nrconf{restart} = 'a';/" /etc/needrestart/needrestart.conf > /dev/null || true
@@ -79,11 +75,8 @@ export HOSTNAME="${img_name}"
 
 disk-image-create --no-tmpfs -a amd64 -o "${img_name}".qcow2 "${IMAGE_OS}"-"${IMAGE_TYPE}" block-device-efi
 
-
 if [[ "${IMAGE_TYPE}" == "node" ]]; then
-  verify_node_image "${img_name}" "${REPO_ROOT}"
-  echo "Image testing successful."
-  upload_node_image "${img_name}"
+  echo "${img_name}" > "${REPO_ROOT}/image_name.txt"
 else
   upload_ci_image_cleura "${img_name}"
   upload_ci_image_xerces "${img_name}"
